@@ -7,7 +7,7 @@ import model.Reserva;
 
 import java.util.List;
 
-public class ReservaRepository {
+public class ReservaRepository{
 
     private EntityManager em;
 

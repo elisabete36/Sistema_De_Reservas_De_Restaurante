@@ -1,5 +1,6 @@
 package repository;
 
+import jakarta.persistence.CascadeType;
 import model.Restaurante;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

@@ -3,8 +3,14 @@ package controller;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import model.Cliente;
+import model.FormaPagamento;
+import model.Mesa;
+import model.Reserva;
 import repository.ClienteRepository;
+import repository.ReservaRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,8 +20,8 @@ public class MainApp {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("reservaPU");
         EntityManager em = emf.createEntityManager();
 
-        ClienteRepository clienteRepo = new ClienteRepository(em);
         ReservaRepository reservaRepo = new ReservaRepository(em);
+        ClienteRepository clienteRepo = new ClienteRepository(em); // Adiciona o repositório do cliente
 
         Scanner scanner = new Scanner(System.in);
         int opcao;
@@ -32,7 +38,7 @@ public class MainApp {
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             opcao = scanner.nextInt();
-            scanner.nextLine(); // limpar buffer
+            scanner.nextLine(); // Limpar buffer
 
             switch (opcao) {
                 case 1:
@@ -45,8 +51,45 @@ public class MainApp {
                     System.out.println("Funcionalidade de cadastro de funcionário...");
                     break;
                 case 4:
-                    System.out.println("Funcionalidade de criação de reserva...");
+                    System.out.println("Criando uma nova reserva...");
+
+                    // Solicitar os dados do cliente
+                    System.out.print("Nome do cliente: ");
+                    String nomeCliente = scanner.nextLine();
+
+                    Cliente cliente = new Cliente(); // Instanciando um novo cliente
+                    cliente.setNome(nomeCliente); // Definindo o nome do cliente
+                    clienteRepo.salvar(cliente); // Salva o cliente no banco de dados
+
+                    // Solicitar os dados da mesa
+                    System.out.print("Número da mesa: ");
+                    int numeroMesa = scanner.nextInt();
+                    scanner.nextLine(); // Limpar buffer
+                    Mesa mesa = new Mesa(); // Criar a mesa (você precisará de uma classe Mesa)
+                    mesa.setNumero(numeroMesa); // Defina os parâmetros de mesa de acordo com o que sua classe `Mesa` requer
+
+                    // Solicitar a data da reserva
+                    System.out.print("Data da reserva (format YYYY-MM-DD): ");
+                        String dataStr = scanner.nextLine();
+                           Date dataReserva = Date.valueOf(dataStr); // Convertendo a string para um objeto Date (ou usar um DateTimeFormatter dependendo de como você deseja tratar a data)
+
+                    // Solicitar forma de pagamento
+                    System.out.print("Forma de pagamento (DINHEIRO ou CARTAO): ");
+                        String formaStr = scanner.nextLine().toUpperCase();
+                          FormaPagamento formaPagamento = FormaPagamento.valueOf(formaStr);
+
+                    // Solicitar o valor da reserva
+                    System.out.print("Valor da reserva: ");
+                        double valor = scanner.nextDouble();
+                           scanner.nextLine(); // Limpar buffer
+
+                    // Agora, você cria a reserva passando os parâmetros corretos para o construtor
+                    Reserva reserva = new Reserva(cliente, mesa, dataReserva, formaPagamento, valor);
+                    reservaRepo.salvar(reserva); // Salva a reserva no banco de dados
+
+                    System.out.println("Reserva criada com sucesso!");
                     break;
+
                 case 5:
                     System.out.print("ID da reserva a cancelar: ");
                     Long idCancelar = scanner.nextLong();
@@ -56,9 +99,20 @@ public class MainApp {
                 case 6:
                     System.out.print("ID da reserva para registrar pagamento: ");
                     Long idPagar = scanner.nextLong();
-                    reservaRepo.registrarPagamento(idPagar);
+
+                    System.out.print("Valor do pagamento: ");
+                    double valor = scanner.nextDouble();
+                    scanner.nextLine(); // Limpar buffer
+
+                    System.out.print("Forma de pagamento (DINHEIRO ou CARTAO): ");
+                    String formaStrPagar = scanner.nextLine().toUpperCase();
+
+                    FormaPagamento formaPagar = FormaPagamento.valueOf(formaStrPagar);
+
+                    reservaRepo.registrarPagamento(idPagar, valor, formaPagar);
                     System.out.println("Pagamento registrado com sucesso.");
                     break;
+
                 case 7:
                     List<Reserva> canceladas = reservaRepo.listarReservasCanceladas();
                     System.out.println("--- Reservas Canceladas ---");

@@ -11,9 +11,8 @@ public class MenuPrincipal {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("nome-da-sua-persistence-unit");
         EntityManager em = emf.createEntityManager();
 
-        ClienteRepository clienteRepo = new ClienteRepository(em); // ✅ CORRETO
+        ClienteRepository clienteRepo = new ClienteRepository(em); //
 
-        // use o clienteRepo...
 
         em.close();
         emf.close();

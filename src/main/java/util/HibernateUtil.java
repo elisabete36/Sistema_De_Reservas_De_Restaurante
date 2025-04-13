@@ -11,7 +11,7 @@ public class HibernateUtil {
 
     static {
         try {
-            // Lê a configuração do hibernate.cfg.xml
+
             emf = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
         } catch (Throwable ex) {
             System.err.println("Falha ao criar EntityManagerFactory." + ex);

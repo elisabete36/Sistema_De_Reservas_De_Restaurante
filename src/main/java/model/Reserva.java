@@ -39,7 +39,7 @@ private Cliente cliente;
         this.cancelada = false; // padrão: reserva não está cancelada
     }
 
-    // Getters
+    //Getters
     public Long getId() { return id; }
     public Cliente getCliente() { return cliente; }
     public Mesa getMesa() { return mesa; }

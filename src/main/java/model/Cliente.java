@@ -15,17 +15,17 @@ public class Cliente implements Serializable {
     private String cpf;
     private String email;
 
-    // Construtor padrão
+
     public Cliente() {}
 
-    // Construtor parametrizado
+    //construtor com parametros
     public Cliente(String nome, String cpf, String email) {
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
     }
 
-    // Getters e Setters
+    //getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

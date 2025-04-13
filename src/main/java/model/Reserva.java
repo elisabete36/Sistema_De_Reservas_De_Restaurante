@@ -6,17 +6,18 @@ import java.util.Date;
 
 @Entity
 @Table(name = "reservas")
-public class Reserva {
+public Reserva() {
+    this.cancelada = false;
+}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@ManyToOne
+@JoinColumn(name = "cliente_id", nullable = false)
+private Cliente cliente;
 
-    @ManyToOne
-    private Cliente cliente;
+@ManyToOne
+  @JoinColumn(name = "mesa_id", nullable = false)
+      private Mesa mesa;
 
-    @ManyToOne
-    private Mesa mesa;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataReserva;

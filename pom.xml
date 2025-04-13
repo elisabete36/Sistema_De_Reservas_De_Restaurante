@@ -22,7 +22,7 @@
             <version>3.1.0</version>
         </dependency>
 
-        <!-- Hibernate ORM (implementação da JPA) -->
+        <!-- Hibernate (implementação da JPA) -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>

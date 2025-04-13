@@ -1,40 +1,77 @@
-package model;
+package restaurante.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
-@Table(name = "restaurantes")
-public class Restaurante {
-
+@Table(name = "clientes")
+public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String nome;
-    private String endereco;
 
-    public Restaurante() {}
+    @Column(unique = true, length = 100)
+    private String email;
 
-    public Restaurante(String nome, String endereco) {
-        this.nome = nome;
-        this.endereco = endereco;
+    // Construtores
+    public Cliente() {
+        // Construtor padrão necessário para JPA
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Cliente(String nome, String email) {
+        this.nome = nome;
+        this.email = email;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public Cliente(Cliente outro) {
+        this.id = outro.id;
+        this.nome = outro.nome;
+        this.email = outro.email;
+    }
 
-    public String getEndereco() { return endereco; }
-    public void setEndereco(String endereco) { this.endereco = endereco; }
+    // Getters e Setters
+    public Long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cliente cliente = (Cliente) o;
+        return Objects.equals(id, cliente.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {
-        return "Restaurante{" +
+        return "Cliente{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", endereco='" + endereco + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }

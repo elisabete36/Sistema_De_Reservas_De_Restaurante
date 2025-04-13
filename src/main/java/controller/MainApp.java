@@ -1,137 +1,84 @@
-package controller;
+package com.restaurante.controller;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import model.Cliente;
-import model.FormaPagamento;
-import model.Mesa;
-import model.Reserva;
-import repository.ClienteRepository;
-import repository.ReservaRepository;
-
-import java.sql.Date;
-import java.util.List;
-import java.util.Scanner;
-import java.util.logging.Logger;
+import java.util.Date;
+import model.*;
+import repository.*;
+import util.PopularBanco;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 public class MainApp {
-
-    private static final Logger logger = Logger.getLogger(MainApp.class.getName());
-
     public static void main(String[] args) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("reservaPU");
-        EntityManager em = emf.createEntityManager();
+        try {
+            // Configura o Hibernate
+            SessionFactory sessionFactory = new Configuration()
+                    .configure("hibernate.cfg.xml")
+                    .buildSessionFactory();
 
-        ReservaRepository reservaRepo = new ReservaRepository(em);
-        ClienteRepository clienteRepo = new ClienteRepository(em);
+            // Popula o banco de dados com dados iniciais
+            PopularBanco.popular();
 
-        Scanner scanner = new Scanner(System.in);
-        int opcao;
+            // Testa as consultas
+            testarConsultas();
 
-        do {
-            logger.info("\n--- MENU PRINCIPAL ---\n" +
-                    "1. Cadastrar Restaurante\n" +
-                    "2. Cadastrar Usuário\n" +
-                    "3. Cadastrar Funcionário\n" +
-                    "4. Criar Reserva\n" +
-                    "5. Cancelar Reserva\n" +
-                    "6. Registrar Pagamento\n" +
-                    "7. Listar Reservas Canceladas\n" +
-                    "0. Sair");
+            System.out.println("Aplicação executada com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro na aplicação: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
-            System.out.print("Escolha uma opção: ");
-            opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar buffer
+    private static void testarConsultas() {
+        System.out.println("\n=== TESTANDO CONSULTAS ===");
 
-            switch (opcao) {
-                case 1:
-                    logger.info("Funcionalidade de cadastro de restaurante...");
-                    break;
-                case 2:
-                    logger.info("Funcionalidade de cadastro de usuário...");
-                    break;
-                case 3:
-                    logger.info("Funcionalidade de cadastro de funcionário...");
-                    break;
-                case 4:
-                    logger.info("Criando uma nova reserva...");
+        ClienteRepository clienteRepo = new ClienteRepository();
+        ReservaRepository reservaRepo = new ReservaRepository();
+        FormaPagamentoRepository formaPagamentoRepo = new FormaPagamentoRepository();
 
-                    System.out.print("Nome do cliente: ");
-                    String nomeCliente = scanner.nextLine();
+        try {
+            // Testa consulta com LIKE
+            System.out.println("\nClientes com nome similar a 'João':");
+            clienteRepo.findByNomeSimilar("João").forEach(System.out::println);
 
-                    Cliente cliente = new Cliente();
-                    cliente.setNome(nomeCliente);
-                    clienteRepo.salvar(cliente);
+            // Testa consulta com JOIN
+            System.out.println("\nReservas com informações de clientes:");
+            reservaRepo.findWithClientes().forEach(System.out::println);
 
-                    System.out.print("Número da mesa: ");
-                    int numeroMesa = scanner.nextInt();
-                    scanner.nextLine();
+            // Testa consulta com intervalo de datas
+            Date hoje = new Date();
+            Date amanha = new Date(hoje.getTime() + (1000 * 60 * 60 * 24));
+            System.out.println("\nReservas entre hoje e amanhã:");
+            reservaRepo.findByDataBetween(hoje, amanha).forEach(System.out::println);
 
-                    Mesa mesa = new Mesa();
-                    mesa.setNumero(numeroMesa);
+            // Testa consulta de agregação
+            System.out.println("\nMédia de reservas por dia:");
+            System.out.println(reservaRepo.getMediaReservasPorDia());
 
-                    System.out.print("Data da reserva (format YYYY-MM-DD): ");
-                    String dataStr = scanner.nextLine();
-                    Date dataReserva = Date.valueOf(dataStr);
+            // Testa novas funcionalidades de pagamento
+            System.out.println("\nFormas de pagamento ativas:");
+            formaPagamentoRepo.listarAtivas().forEach(System.out::println);
 
-                    System.out.print("Forma de pagamento (DINHEIRO ou CARTAO): ");
-                    String formaStr = scanner.nextLine().toUpperCase();
-                    FormaPagamento formaPagamento = FormaPagamento.valueOf(formaStr);
+            System.out.println("\nReservas pagas:");
+            reservaRepo.findByStatusPagamento(true).forEach(System.out::println);
 
-                    System.out.print("Valor da reserva: ");
-                    double valor = scanner.nextDouble();
-                    scanner.nextLine();
+            System.out.println("\nReservas não pagas:");
+            reservaRepo.findByStatusPagamento(false).forEach(System.out::println);
 
-                    Reserva reserva = new Reserva(cliente, mesa, dataReserva, formaPagamento, valor);
-                    reservaRepo.salvar(reserva);
-
-                    logger.info("Reserva criada com sucesso!");
-                    break;
-
-                case 5:
-                    System.out.print("ID da reserva a cancelar: ");
-                    Long idCancelar = scanner.nextLong();
-                    reservaRepo.cancelarReserva(idCancelar);
-                    logger.info("Reserva cancelada com sucesso.");
-                    break;
-
-                case 6:
-                    System.out.print("ID da reserva para registrar pagamento: ");
-                    Long idPagar = scanner.nextLong();
-
-                    System.out.print("Valor do pagamento: ");
-                    double valorPagamento = scanner.nextDouble();
-                    scanner.nextLine();
-
-                    System.out.print("Forma de pagamento (DINHEIRO ou CARTAO): ");
-                    String formaStrPagar = scanner.nextLine().toUpperCase();
-                    FormaPagamento formaPagar = FormaPagamento.valueOf(formaStrPagar);
-
-                    reservaRepo.registrarPagamento(idPagar, valorPagamento, formaPagar);
-                    logger.info("Pagamento registrado com sucesso.");
-                    break;
-
-                case 7:
-                    List<Reserva> canceladas = reservaRepo.listarReservasCanceladas();
-                    logger.info("--- Reservas Canceladas ---");
-                    for (Reserva r : canceladas) {
-                        logger.info("ID: " + r.getId() + " | Cliente: " + r.getCliente().getNome());
-                    }
-                    break;
-
-                case 0:
-                    logger.info("Encerrando o sistema.");
-                    break;
-
-                default:
-                    logger.warning("Opção inválida.");
+            // Testa atualização de pagamento
+            if (!reservaRepo.findByStatusPagamento(false).isEmpty()) {
+                Long reservaId = reservaRepo.findByStatusPagamento(false).get(0).getId();
+                System.out.println("\nRegistrando pagamento para reserva ID: " + reservaId);
+                reservaRepo.atualizarPagamento(reservaId, true, 1L); // Assumindo que ID 1 é uma forma de pagamento válida
+                System.out.println("Pagamento registrado com sucesso!");
             }
 
-        } while (opcao != 0);
-
-        em.close();
-        emf.close();
-        scanner.close();
+            // Testa cálculo de receitas
+            System.out.println("\nTotal de receitas:");
+            System.out.println("R$ " + reservaRepo.getTotalReceitas(hoje, amanha));
+        } finally {
+            clienteRepo.close();
+            reservaRepo.close();
+            formaPagamentoRepo.close();
+        }
     }
 }

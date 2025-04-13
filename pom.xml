@@ -1,46 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings - H2 in memory -->
+        <property name="hibernate.connection.driver_class">org.h2.Driver</property>
+        <property name="hibernate.connection.url">jdbc:h2:mem:e=SistemadeReservasdeRestaurante;DB_CLOSE_DELAY=-1</property>
+        <property name="hibernate.connection.postgres"></property>
+        <property name="hibernate.connection.260105"></property>
 
-    <groupId>org.example</groupId>
-    <artifactId>Sistema_De_Reservas_De_Restaurante</artifactId>
-    <version>1.0-SNAPSHOT</version>
+        <!-- SQL dialect -->
+        <property name="hibernate.dialect">org.hibernate.dialect.H2Dialect</property>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+        <!-- Echo all executed SQL to stdout -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
 
-    <dependencies>
-        <!-- JPA API (Jakarta Persistence) -->
-        <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.1.0</version>
-        </dependency>
+        <!-- Update the database schema on startup -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
 
-        <!-- Hibernate (implementação da JPA) -->
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.3.1.Final</version>
-        </dependency>
+        <!-- Current session context configuration -->
+        <property name="hibernate.current_session_context_class">thread</property>
 
-        <!-- Driver PostgreSQL -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.3</version>
-        </dependency>
+        <!-- Connection pool settings -->
+        <property name="hibernate.connection.pool_size">10</property>
+        <property name="hibernate.connection.autocommit">false</property>
 
-        <!-- Logger SLF4J (opcional, mas útil para mensagens do Hibernate) -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.9</version>
-        </dependency>
-    </dependencies>
-</project>
+        <!-- Entity mappings -->
+        <mapping class="model.Cliente"/>
+        <mapping class="model.Mesa"/>
+        <mapping class="model.Reserva"/>
+        <mapping class="model.FormaPagamento"/>
+        <mapping class="model.Funcionario"/>
+        <mapping class="model.Restaurante"/>
+    </session-factory>
+</hibernate-configuration>

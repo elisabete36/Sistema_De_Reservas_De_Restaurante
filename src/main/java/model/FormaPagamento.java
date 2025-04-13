@@ -70,3 +70,4 @@ public class Formapagamento {
         scanner.close();
     }
 }
+abstract

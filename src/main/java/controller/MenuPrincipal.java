@@ -8,10 +8,9 @@ import jakarta.persistence.Persistence;
 
 public class MenuPrincipal {
     public static void main(String[] args) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("nome-da-sua-persistence-unit");
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("SistemadeReservasdeRestaurante");
         EntityManager em = emf.createEntityManager();
 
-        ClienteRepository clienteRepo = new ClienteRepository(em); //
 
 
         em.close();

@@ -1,50 +1,77 @@
 package model;
 
-import jakarta.persistence.*;
-import java.io.Serializable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "clientes")
-public class Cliente implements Serializable {
-
+public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String nome;
-    private String cpf;
+
+    @Column(unique = true, length = 100)
     private String email;
 
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Reserva> reservas = new ArrayList<>();
 
+    // Construtores
     public Cliente() {}
 
-    //construtor com parametros
-    public Cliente(String nome, String cpf, String email) {
+    public Cliente(String nome, String email) {
         this.nome = nome;
-        this.cpf = cpf;
         this.email = email;
     }
 
-    //getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Cliente(Cliente outro) {
+        this.id = outro.id;
+        this.nome = outro.nome;
+        this.email = outro.email;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    // Getters e Setters
+    public Long getId() {
+        return id;
+    }
 
-    public String getCpf() { return cpf; }
-    public void setCpf(String cpf) { this.cpf = cpf; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getNome() {
+        return nome;
+    }
 
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", cpf='" + cpf + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
     }
 }

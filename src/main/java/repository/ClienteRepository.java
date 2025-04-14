@@ -1,14 +1,11 @@
 package repository;
 
 import model.Cliente;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-
-import java.util.List;
+import jakarta.persistence.*;
+import java.util.*;
 
 public class ClienteRepository {
-
-    private EntityManager em;
+    private final EntityManager em;
 
     public ClienteRepository(EntityManager em) {
         this.em = em;
@@ -16,28 +13,26 @@ public class ClienteRepository {
 
     public void salvar(Cliente cliente) {
         em.getTransaction().begin();
-        em.persist(cliente);
+        if(cliente.getId() == null) {
+            em.persist(cliente);
+        } else {
+            em.merge(cliente);
+        }
         em.getTransaction().commit();
     }
 
-    public Cliente buscarPorId(Long id) {
-        return em.find(Cliente.class, id);
+    public List<Cliente> buscarPorNome(String nome) {
+        return em.createQuery("SELECT c FROM Cliente c WHERE c.nome LIKE :nome", Cliente.class)
+                .setParameter("nome", "%" + nome + "%")
+                .getResultList();
     }
 
-    public List<Cliente> buscarTodos() {
-        TypedQuery<Cliente> query = em.createQuery("SELECT c FROM Cliente c", Cliente.class);
-        return query.getResultList();
+    public Optional<Cliente> buscarPorId(Long id) {
+        return Optional.ofNullable(em.find(Cliente.class, id));
     }
 
-    public void atualizar(Cliente cliente) {
-        em.getTransaction().begin();
-        em.merge(cliente);
-        em.getTransaction().commit();
-    }
-
-    public void deletar(Cliente cliente) {
-        em.getTransaction().begin();
-        em.remove(em.contains(cliente) ? cliente : em.merge(cliente));
-        em.getTransaction().commit();
+    public List<Cliente> listarTodos() {
+        return em.createQuery("SELECT c FROM Cliente c", Cliente.class).getResultList();
     }
 }
+

@@ -1,46 +1,57 @@
 package model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
+import java.util.*;
 
 @Entity
 @Table(name = "mesas")
 public class Mesa {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int numero; // <- novo campo
-    private int quantidadeLugares;
-    private boolean salaVip;
+    @Column(nullable = false, unique = true, length = 10)
+    @NotBlank(message = "Número da mesa é obrigatório")
+    private String numero;
 
+    @Column(nullable = false)
+    @Min(value = 1, message = "Capacidade mínima é 1")
+    @Max(value = 20, message = "Capacidade máxima é 20")
+    private int capacidade;
+
+    @Column(nullable = false)
+    private boolean vip;
+
+    @OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reserva> reservas = new ArrayList<>();
+
+    // Construtores
     public Mesa() {}
 
-    public Mesa(int numero, int quantidadeLugares, boolean salaVip) {
+    public Mesa(String numero, int capacidade, boolean vip) {
         this.numero = numero;
-        this.quantidadeLugares = quantidadeLugares;
-        this.salaVip = salaVip;
+        this.capacidade = capacidade;
+        this.vip = vip;
     }
 
+    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public int getNumero() { return numero; }
-    public void setNumero(int numero) { this.numero = numero; }
-
-    public int getQuantidadeLugares() { return quantidadeLugares; }
-    public void setQuantidadeLugares(int quantidadeLugares) { this.quantidadeLugares = quantidadeLugares; }
-
-    public boolean isSalaVip() { return salaVip; }
-    public void setSalaVip(boolean salaVip) { this.salaVip = salaVip; }
+    public String getNumero() { return numero; }
+    public void setNumero(String numero) { this.numero = numero; }
+    public int getCapacidade() { return capacidade; }
+    public void setCapacidade(int capacidade) { this.capacidade = capacidade; }
+    public boolean isVip() { return vip; }
+    public void setVip(boolean vip) { this.vip = vip; }
+    public List<Reserva> getReservas() { return reservas; }
+    public void setReservas(List<Reserva> reservas) { this.reservas = reservas; }
 
     @Override
     public String toString() {
-        return "Mesa{" +
-                "id=" + id +
-                ", numero=" + numero +
-                ", quantidadeLugares=" + quantidadeLugares +
-                ", salaVip=" + salaVip +
-                '}';
+        return "Mesa " + numero + " (" + capacidade + " lugares)" + (vip ? " - VIP" : "");
     }
 }

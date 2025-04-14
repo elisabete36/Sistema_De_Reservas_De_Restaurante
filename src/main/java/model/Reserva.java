@@ -1,72 +1,105 @@
 package model;
 
 import jakarta.persistence.*;
-
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "reservas")
-public Reserva() {
-    this.cancelada = false;
-}
+public class Reserva {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-@ManyToOne
-@JoinColumn(name = "cliente_id", nullable = false)
-private Cliente cliente;
+    @ManyToOne
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
 
-@ManyToOne
-  @JoinColumn(name = "mesa_id", nullable = false)
-      private Mesa mesa;
+    @ManyToOne
+    @JoinColumn(name = "mesa_id", nullable = false)
+    private Mesa mesa;
 
-
+    @Column(name = "data_hora", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataReserva;
+    private Date dataHora;
 
-    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private int quantidadePessoas;
+
+    @Column(nullable = false)
+    private boolean vip;
+
+    @Column(nullable = false)
+    private boolean pago;
+
+    @ManyToOne
+    @JoinColumn(name = "forma_pagamento_id")
     private FormaPagamento formaPagamento;
 
-    private double valorPago;
+    @Column(name = "valor", nullable = false, precision = 10, scale = 2)
+    private BigDecimal valor;
 
-    // ✅ Adicione este campo
-    private boolean cancelada;
-
-    public Reserva(Cliente cliente, Mesa mesa, Date dataReserva, FormaPagamento formaPagamento, double valorPago) {
-        this.cliente = cliente;
-        this.mesa = mesa;
-        this.dataReserva = dataReserva;
-        this.formaPagamento = formaPagamento;
-        this.valorPago = valorPago;
-        this.cancelada = false; // padrão: reserva não está cancelada
+    public Reserva() {
     }
 
-    // Getters
+    public Reserva(Cliente cliente, Mesa mesa, Date dataHora, int quantidadePessoas,
+                   boolean vip, FormaPagamento formaPagamento, BigDecimal valor) {
+        this.cliente = cliente;
+        this.mesa = mesa;
+        this.dataHora = dataHora;
+        this.quantidadePessoas = quantidadePessoas;
+        this.vip = vip;
+        this.formaPagamento = formaPagamento;
+        this.valor = valor;
+        this.pago = false;
+    }
+
+    // Getters e Setters
     public Long getId() { return id; }
     public Cliente getCliente() { return cliente; }
     public Mesa getMesa() { return mesa; }
-    public Date getDataReserva() { return dataReserva; }
+    public Date getDataHora() { return dataHora; }
+    public int getQuantidadePessoas() { return quantidadePessoas; }
+    public boolean isVip() { return vip; }
+    public boolean isPago() { return pago; }
     public FormaPagamento getFormaPagamento() { return formaPagamento; }
-    public double getValorPago() { return valorPago; }
-    public boolean isCancelada() { return cancelada; }
+    public BigDecimal getValor() { return valor; }
 
-    // Setters
-    public void setId(Long id) { this.id = id; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
-    public void setMesa(Mesa mesa) { this.mesa = mesa; }
-    public void setDataReserva(Date dataReserva) { this.dataReserva = dataReserva; }
+    public void setPago(boolean pago) { this.pago = pago; }
     public void setFormaPagamento(FormaPagamento formaPagamento) { this.formaPagamento = formaPagamento; }
-    public void setValorPago(double valorPago) { this.valorPago = valorPago; }
-    public void setCancelada(boolean cancelada) { this.cancelada = cancelada; }
+    public void setValor(BigDecimal valor) { this.valor = valor; }
+
+    // Métodos de negócio
+    public BigDecimal calcularTroco(BigDecimal valorPago) {
+        return valorPago.subtract(valor).max(BigDecimal.ZERO);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reserva reserva = (Reserva) o;
+        return Objects.equals(id, reserva.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {
         return "Reserva{" +
                 "id=" + id +
-                ", cliente=" + cliente.getNome() +
-                ", mesa=" + mesa.getId() +
-                ", dataReserva=" + dataReserva +
+                ", cliente=" + cliente +
+                ", mesa=" + mesa +
+                ", dataHora=" + dataHora +
+                ", quantidadePessoas=" + quantidadePessoas +
+                ", vip=" + vip +
+                ", pago=" + pago +
                 ", formaPagamento=" + formaPagamento +
-                ", valorPago=" + valorPago +
-                ", cancelada=" + cancelada +
+                ", valor=" + valor +
                 '}';
     }
 }

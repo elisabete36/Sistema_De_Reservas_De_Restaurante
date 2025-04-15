@@ -13,16 +13,16 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @ManyToOne
-    @JoinColumn(name = "mesa_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "mesa_id")
     private Mesa mesa;
 
-    @Column(name = "data_hora", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "data_hora", nullable = false)
     private Date dataHora;
 
     @Column(nullable = false)
@@ -35,18 +35,18 @@ public class Reserva {
     private boolean pago;
 
     @ManyToOne
-    @JoinColumn(name = "forma_pagamento_id")
+    @JoinColumn(name = "forma_pagamento_id", nullable = false)
     private FormaPagamento formaPagamento;
 
-    @Column(name = "valor", nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valor;
 
-    @Enumerated(EnumType.STRING)  // Referência ao Status
-    @Column(name = "status", nullable = false)
-    private Status status;  // A variável status do tipo Status enum
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
-    public Reserva() {
-    }
+    // Construtores
+    public Reserva() {}
 
     public Reserva(Cliente cliente, Mesa mesa, Date dataHora, int quantidadePessoas,
                    boolean vip, FormaPagamento formaPagamento, BigDecimal valor, Status status) {
@@ -57,20 +57,28 @@ public class Reserva {
         this.vip = vip;
         this.formaPagamento = formaPagamento;
         this.valor = valor;
-        this.status = status;  // Atribuindo o status na criação
+        this.status = status;
         this.pago = false;
     }
 
     // Getters e Setters
     public Long getId() { return id; }
     public Cliente getCliente() { return cliente; }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
     public Mesa getMesa() { return mesa; }
+    public void setMesa(Mesa mesa) { this.mesa = mesa; }
     public Date getDataHora() { return dataHora; }
+    public void setDataHora(Date dataHora) { this.dataHora = dataHora; }
     public int getQuantidadePessoas() { return quantidadePessoas; }
+    public void setQuantidadePessoas(int quantidadePessoas) { this.quantidadePessoas = quantidadePessoas; }
     public boolean isVip() { return vip; }
+    public void setVip(boolean vip) { this.vip = vip; }
     public boolean isPago() { return pago; }
+    public void setPago(boolean pago) { this.pago = pago; }
     public FormaPagamento getFormaPagamento() { return formaPagamento; }
+    public void setFormaPagamento(FormaPagamento formaPagamento) { this.formaPagamento = formaPagamento; }
     public BigDecimal getValor() { return valor; }
+    public void setValor(BigDecimal valor) { this.valor = valor; }
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
 
@@ -79,10 +87,11 @@ public class Reserva {
         return valorPago.subtract(valor).max(BigDecimal.ZERO);
     }
 
+    // equals e hashCode com base no id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Reserva)) return false;
         Reserva reserva = (Reserva) o;
         return Objects.equals(id, reserva.id);
     }
@@ -92,6 +101,7 @@ public class Reserva {
         return Objects.hash(id);
     }
 
+    // toString
     @Override
     public String toString() {
         return "Reserva{" +
@@ -104,7 +114,7 @@ public class Reserva {
                 ", pago=" + pago +
                 ", formaPagamento=" + formaPagamento +
                 ", valor=" + valor +
-                ", status=" + status +  // Status adicionado na saída
+                ", status=" + status +
                 '}';
     }
 }

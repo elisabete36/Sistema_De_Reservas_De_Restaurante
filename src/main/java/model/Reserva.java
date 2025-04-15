@@ -8,6 +8,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "reservas")
 public class Reserva {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,11 +41,15 @@ public class Reserva {
     @Column(name = "valor", nullable = false, precision = 10, scale = 2)
     private BigDecimal valor;
 
+    @Enumerated(EnumType.STRING)  // Referência ao Status
+    @Column(name = "status", nullable = false)
+    private Status status;  // A variável status do tipo Status enum
+
     public Reserva() {
     }
 
     public Reserva(Cliente cliente, Mesa mesa, Date dataHora, int quantidadePessoas,
-                   boolean vip, FormaPagamento formaPagamento, BigDecimal valor) {
+                   boolean vip, FormaPagamento formaPagamento, BigDecimal valor, Status status) {
         this.cliente = cliente;
         this.mesa = mesa;
         this.dataHora = dataHora;
@@ -52,6 +57,7 @@ public class Reserva {
         this.vip = vip;
         this.formaPagamento = formaPagamento;
         this.valor = valor;
+        this.status = status;  // Atribuindo o status na criação
         this.pago = false;
     }
 
@@ -65,10 +71,8 @@ public class Reserva {
     public boolean isPago() { return pago; }
     public FormaPagamento getFormaPagamento() { return formaPagamento; }
     public BigDecimal getValor() { return valor; }
-
-    public void setPago(boolean pago) { this.pago = pago; }
-    public void setFormaPagamento(FormaPagamento formaPagamento) { this.formaPagamento = formaPagamento; }
-    public void setValor(BigDecimal valor) { this.valor = valor; }
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
 
     // Métodos de negócio
     public BigDecimal calcularTroco(BigDecimal valorPago) {
@@ -100,6 +104,7 @@ public class Reserva {
                 ", pago=" + pago +
                 ", formaPagamento=" + formaPagamento +
                 ", valor=" + valor +
+                ", status=" + status +  // Status adicionado na saída
                 '}';
     }
 }

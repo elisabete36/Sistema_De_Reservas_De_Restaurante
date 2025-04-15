@@ -1,5 +1,6 @@
 package util;
 
+import model.Status;
 import model.*;
 import repository.*;
 import jakarta.persistence.*;
@@ -131,7 +132,25 @@ public class Menu {
                     // Implementar criação de reserva
                     break;
                 case 2:
-                    repo.listarPorStatus(Reserva.Status.CONFIRMADA).forEach(System.out::println);
+                    System.out.println("Reservas por status:");
+                    System.out.println("1. ATIVA");
+                    System.out.println("2. CANCELADA");
+                    System.out.println("3. CONCLUIDA");
+                    System.out.print("Escolha: ");
+                    int escolhaStatus = scanner.nextInt();
+                    scanner.nextLine();  // limpar buffer
+
+                    Status statusEscolhido = null;
+                    switch (escolhaStatus) {
+                        case 1: statusEscolhido = Status.ATIVA; break;
+                        case 2: statusEscolhido = Status.CANCELADA; break;
+                        case 3: statusEscolhido = Status.CONCLUIDA; break;
+                        default:
+                            System.out.println("Status inválido.");
+                            continue;
+                    }
+
+                    repo.listarPorStatus(statusEscolhido).forEach(System.out::println);
                     break;
                 case 3:
                     // Implementar cancelamento

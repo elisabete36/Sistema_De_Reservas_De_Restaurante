@@ -1,12 +1,12 @@
 package model;
 
 import jakarta.persistence.*;
-
 import java.util.*;
 
 @Entity
 @Table(name = "formas_pagamento")
 public class FormaPagamento {
+
     public enum Tipo {
         CARTAO_CREDITO,
         CARTAO_DEBITO,

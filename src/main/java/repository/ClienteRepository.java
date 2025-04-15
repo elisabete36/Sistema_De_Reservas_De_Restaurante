@@ -11,6 +11,12 @@ public class ClienteRepository {
         this.em = em;
     }
 
+    public List<Cliente> findByNomeSimilar(String nome) {
+        return em.createQuery("SELECT c FROM Cliente c WHERE LOWER(c.nome) LIKE LOWER(:nome)", Cliente.class)
+                .setParameter("nome", "%" + nome + "%")
+                .getResultList();
+    }
+
     public void salvar(Cliente cliente) {
         em.getTransaction().begin();
         if(cliente.getId() == null) {

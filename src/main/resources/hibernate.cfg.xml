@@ -6,9 +6,9 @@
     <session-factory>
         <!-- Database connection settings -->
         <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://localhost:5432/SistemadeReservasdeRestaurante</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5433/Reservas_Restaurantes</property>
         <property name="connection.username">postgres</property>
-        <property name="connection.password">260105</property>
+        <property name="connection.password">Neguinha</property>
 
         <!-- JDBC connection pool settings -->
         <property name="connection.pool_size">1</property>

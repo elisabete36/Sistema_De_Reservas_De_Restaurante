@@ -41,4 +41,3 @@ public class ClienteRepository {
         return em.createQuery("SELECT c FROM Cliente c", Cliente.class).getResultList();
     }
 }
-
